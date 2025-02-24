@@ -13,20 +13,31 @@ class Experiment:
 
     def sorted_roc_points(self) -> tuple[list[float], list[float]]:
         """Returns sorted false alarm rates and hit rates for plotting the ROC curve."""
-        if not self.conditions:
+        if len(self.conditions) == 0:
             raise ValueError("No conditions in experiment.")
         
         false_alarm_rates = []
         hit_rates = []
         
-        for sdt, label in self.conditions:
-            false_alarm_rates.append(sdt.false_alarm_rate())
-            hit_rates.append(sdt.hit_rate())
+        for condition, label in self.conditions:
+            false_alarm_rate = condition.false_alarm_rate()
+            hit_rate = condition.hit_rate()
+            false_alarm_rates.append(false_alarm_rate)
+            hit_rates.append(hit_rate)
 
-        # Sort by false alarm rate
-        sorted_indices = np.argsort(false_alarm_rates)
-        false_alarm_rates = np.array(false_alarm_rates)[sorted_indices]
-        hit_rates = np.array(hit_rates)[sorted_indices]
+        # Debugging output: print the ROC points before sorting
+        # print("Unsorted ROC points:")
+        # for f, h in zip(false_alarm_rates, hit_rates):
+        #     print(f"False Alarm Rate: {f}, Hit Rate: {h}")
+
+         # Sort by false alarm rate
+        sorted_points = sorted(zip(false_alarm_rates, hit_rates))
+        false_alarm_rates, hit_rates = zip(*sorted_points)
+
+        # Debugging output: print the sorted ROC points
+        # print("Sorted ROC points:")
+        # for f, h in zip(false_alarm_rates, hit_rates):
+        #     print(f"False Alarm Rate: {f}, Hit Rate: {h}")
 
         return list(false_alarm_rates), list(hit_rates)
 
@@ -37,8 +48,16 @@ class Experiment:
         
         false_alarm_rates, hit_rates = self.sorted_roc_points()
 
+        if len(false_alarm_rates) < 2:
+            raise ValueError("Not enough points to compute AUC.")
+        
+        # Debugging output: print the ROC points before calculating AUC
+        print(f"False Alarm Rates: {false_alarm_rates}")
+        print(f"Hit Rates: {hit_rates}")
+
         # Compute AUC using the trapezoidal rule
         auc = np.trapz(hit_rates, false_alarm_rates)
+        print(f"AUC: {auc}")  # Print the AUC value for debugging
         return auc
 
     def plot_roc_curve(self, show_plot: bool = True):

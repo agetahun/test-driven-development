@@ -10,11 +10,17 @@ class SignalDetection:
     def hit_rate(self):
         """Calculate hit rate"""
         total_signal_trials = self.hits + self.misses
+        if total_signal_trials == 0:
+            return 0.0  # No signal trials, so return 0
         return (self.hits) / (total_signal_trials)
 
     def false_alarm_rate(self):
         """Calculate false alarm rate"""
         total_noise_trials = self.falseAlarms + self.correctRejections
+        print(f"False Alarm Trials: {self.falseAlarms}, Correct Rejections: {self.correctRejections}")
+        print(f"Total Noise Trials: {total_noise_trials}")
+        if total_noise_trials == 0:
+            return 0.0  # Treat no noise trials as a zero false alarm rate to avoid division by zero
         return (self.falseAlarms) / (total_noise_trials)
 
     def d_prime(self):
