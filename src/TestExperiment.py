@@ -35,10 +35,19 @@ class TestExperiment(unittest.TestCase):
         with self.assertRaises(ValueError):
             false_alarm_rate, hit_rate = self.exp.sorted_roc_points()
 
-    def test_compute_auc(self):
+    def test_compute_auc_two_conditions(self):
         """Test that AUC is computed correctly."""
         self.exp.add_condition(self.sdt1, label="Condition A")
         self.exp.add_condition(self.sdt2, label="Condition B")
+        auc = self.exp.compute_auc()
+        # Check if AUC is a valid number and not zero
+        self.assertTrue(auc > 0)
+
+    def test_compute_auc_three_conditions(self):
+        """Test that AUC is computed correctly under three conditions."""
+        self.exp.add_condition(self.sdt1, label="Condition A")
+        self.exp.add_condition(self.sdt2, label="Condition B")
+        self.exp.add_condition(self.sdt3, label="Condition C")
         auc = self.exp.compute_auc()
         # Check if AUC is a valid number and not zero
         self.assertTrue(auc > 0)
@@ -47,7 +56,6 @@ class TestExperiment(unittest.TestCase):
         """Test to see that a ValueError is raised when no conditions are present."""
         with self.assertRaises(ValueError):
             auc = self.exp.compute_auc()
-
 
     def test_empty_experiment(self):
         """Test for empty experiment conditions."""
