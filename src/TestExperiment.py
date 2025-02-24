@@ -29,6 +29,11 @@ class TestExperiment(unittest.TestCase):
 
         # Check if sorted by false alarm rate
         self.assertTrue(all(false_alarm_rate[i] <= false_alarm_rate[i+1] for i in range(len(false_alarm_rate)-1)))
+        
+    def test_sorted_roc_points_no_condition(self):
+        """Test to see that a ValueError is raised when no conditions are present."""
+        with self.assertRaises(ValueError):
+            false_alarm_rate, hit_rate = self.exp.sorted_roc_points()
 
     def test_compute_auc(self):
         """Test that AUC is computed correctly."""
